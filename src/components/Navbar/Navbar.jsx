@@ -2,7 +2,7 @@ import useAuth from "../../hooks/useAuth";
 import img1 from "../../../public/logi.jfif";
 import { Link } from "react-router-dom";
 const Navbar = () => {
-  const { user } = useAuth();
+  const { user, logOut } = useAuth();
   return (
     <div className="navbar bg-base-100 shadow-sm container px-4 mx-auto">
       <div className="flex-1">
@@ -38,8 +38,8 @@ const Navbar = () => {
               <div className="w-10 rounded-full" title="">
                 <img
                   referrerPolicy="no-referrer"
-                  alt="User Profile Photo"
-                  src=""
+                  alt="not found"
+                  src={user?.photoURL || ''}
                 />
               </div>
             </div>
@@ -60,7 +60,10 @@ const Navbar = () => {
                 <div>Bid Requests</div>
               </li>
               <li className="mt-2">
-                <button className="bg-gray-200 block text-center">
+                <button
+                  onClick={logOut}
+                  className="bg-gray-200 block text-center"
+                >
                   Logout
                 </button>
               </li>
