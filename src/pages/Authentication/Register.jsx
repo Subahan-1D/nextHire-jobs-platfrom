@@ -1,28 +1,49 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import registerimg from "../../assets/registration.jpg";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
 const Registration = () => {
-  const { createUser } = useAuth();
-
+  const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate("");
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(data);
-    createUser(data.email, data.password).then((result) => {
+  const onSubmit = async (data) => {
+    try {
+      console.log(data);
+      const result = await createUser(data.email, data.password);
       console.log(result.user);
+
+      await updateUserProfile(data.name, data.photo);
+      console.log("Profile updated");
+      toast.success("User Created Successfully!");
+      navigate("/");
       reset();
-    });
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong!");
+    }
   };
-  const [showPassword, setShowPassword] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      toast.success("SignUp Successfully");
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message);
+    }
+  };
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-306px)] mt-5">
+    <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
         <div className="w-full px-6 py-8 md:px-8 lg:w-1/2">
           <div className="flex justify-center mx-auto">
@@ -55,9 +76,12 @@ const Registration = () => {
               </svg>
             </div>
 
-            <span className="w-5/6 px-4 py-3 font-bold text-center">
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-5/6 px-4 py-3 font-bold text-center"
+            >
               Sign in with Google
-            </span>
+            </button>
           </div>
 
           <div className="flex items-center justify-between mt-4">
@@ -81,7 +105,7 @@ const Registration = () => {
                 id="name"
                 autoComplete="name"
                 name="name"
-                placeholder="user-name"
+                placeholder="Name"
                 className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg    focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300"
                 type="text"
                 {...register("name", { required: true })}
@@ -140,19 +164,30 @@ const Registration = () => {
                   className="block w-full px-4 py-2 text-gray-700 bg-white border rounded-lg    focus:border-blue-400 focus:ring-opacity-40  focus:outline-none focus:ring focus:ring-blue-300"
                   id="loggingPassword"
                   autoComplete="current-password"
-                  {...register("password", { required: true })}
+                  {...register("password", {
+                    required: true,
+                    minLength: 6,
+                    maxLength: 20,
+                  })}
                 />
+                {errors.password && (
+                  <span className="text-red-500">
+                    This password is required
+                  </span>
+                )}
+                {errors.password?.type == "minLength" && (
+                  <span className="text-red-600">
+                    {" "}
+                    6 character password is required
+                  </span>
+                )}
+
                 <span
                   className="absolute top-4 right-4"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>}
                 </span>
-                {errors.password && (
-                  <span className="text-red-500">
-                    This password is required
-                  </span>
-                )}
               </div>
             </div>
             <div className="mt-6">
