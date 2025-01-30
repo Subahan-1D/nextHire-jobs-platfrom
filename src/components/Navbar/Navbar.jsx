@@ -39,7 +39,8 @@ const Navbar = () => {
                 <img
                   referrerPolicy="no-referrer"
                   alt="not found"
-                  src={user?.photoURL || ''}
+                  src={user?.photoURL || ""}
+                  className="w-8 h-8 rounded-full border-2 border-yellow-500"
                 />
               </div>
             </div>
