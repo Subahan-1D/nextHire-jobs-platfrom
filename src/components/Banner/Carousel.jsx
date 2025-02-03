@@ -14,7 +14,7 @@ import Slider from "./Slider";
 
 export default function Carousel() {
   return (
-    <div className="container mx-auto my-8">
+    <div className="container mx-auto mb-5">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}

@@ -1,8 +1,17 @@
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import JobCard from "./JobCard";
-
-const TabCategories = ({ jobs }) => {
+import { useEffect, useState } from "react";
+import axios from "axios";
+const TabCategories = () => {
+  const [jobs, setJobs] = useState([]);
+  useEffect(() => {
+    const setData = async () => {
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/jobs`);
+      setJobs(data);
+    };
+    setData();
+  }, []);
   return (
     <Tabs selectedTabClassName="border-b-4 border-blue-500 text-blue-500">
       <div className="container mx-auto px-6 py-10">
@@ -11,7 +20,7 @@ const TabCategories = ({ jobs }) => {
           Browse Jobs By Categories
         </h1>
 
-        <p className="max-w-2xl mx-auto my-6 text-center text-gray-600">
+        <p className="max-w-2xl mx-auto my-6 text-center text-gray-600 mb-5">
           Three categories are available for now: Web Development, Graphics
           Design, and Digital Marketing. Click on the tabs below to browse them.
         </p>
@@ -44,7 +53,7 @@ const TabCategories = ({ jobs }) => {
           </TabPanel>
 
           <TabPanel>
-          <div className="grid sm:grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 my-4 mt-8">
+            <div className="grid sm:grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 my-4 mt-8">
               {jobs
                 .filter((j) => j.category === "Web Development")
                 .map((job) => (
@@ -54,7 +63,7 @@ const TabCategories = ({ jobs }) => {
           </TabPanel>
 
           <TabPanel>
-          <div className="grid sm:grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 my-4 mt-8">
+            <div className="grid sm:grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 my-4 mt-8">
               {jobs
                 .filter((j) => j.category === "Graphics Design")
                 .map((job) => (
