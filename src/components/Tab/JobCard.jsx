@@ -20,7 +20,7 @@ const JobCard = ({ job }) => {
       {/* Header Section */}
       <div className="flex items-center justify-between text-gray-700">
         <span className="flex items-center gap-2 text-xs font-medium text-gray-600">
-          <Calendar size={14} /> {deadline}
+          <Calendar size={14} /> {new Date(deadline).toLocaleDateString()}
         </span>
         <span className="px-3 py-1 text-xs font-semibold text-blue-800 uppercase bg-blue-200 rounded-full">
           {category}
