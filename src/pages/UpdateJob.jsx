@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
+
 const UpdateJob = () => {
   const job = useLoaderData();
   const {
@@ -20,7 +21,7 @@ const UpdateJob = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const handleFromSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const job_title = form.job_title.value;
@@ -50,24 +51,28 @@ const UpdateJob = () => {
         jobData
       );
       console.log(data);
-      toast.success(" Job Data Updated Successful");
+      toast.success("Job data updated successfully!");
       navigate("/my-posted-jobs");
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toast.error("Request Failed With Status 404");
     }
   };
+
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
-      <section className=" p-2 md:p-6 mx-auto bg-white rounded-md shadow-md ">
-        <h2 className="text-lg font-semibold text-gray-700 capitalize ">
-          Update a Job
+    <div className="flex justify-center items-center min-h-screen p-4 bg-gray-50">
+      <section className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-6 md:p-10">
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          Update Job Details
         </h2>
 
-        <form onSubmit={handleFromSubmit}>
-          <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+        <form onSubmit={handleFormSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="text-gray-700 " htmlFor="job_title">
+              <label
+                className="block text-gray-700 font-medium"
+                htmlFor="job_title"
+              >
                 Job Title
               </label>
               <input
@@ -75,12 +80,16 @@ const UpdateJob = () => {
                 name="job_title"
                 type="text"
                 defaultValue={job_title}
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
+                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
               />
             </div>
 
             <div>
-              <label className="text-gray-700 " htmlFor="emailAddress">
+              <label
+                className="block text-gray-700 font-medium"
+                htmlFor="emailAddress"
+              >
                 Email Address
               </label>
               <input
@@ -89,37 +98,45 @@ const UpdateJob = () => {
                 name="email"
                 disabled
                 defaultValue={user?.email}
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
+                className="w-full mt-2 p-3 bg-gray-100 border border-gray-300 rounded-lg focus:outline-none"
               />
             </div>
-            <div className="flex flex-col gap-2 ">
-              <label className="text-gray-700">Deadline</label>
 
-              {/* Date picker input field */}
+            <div>
+              <label className="block text-gray-700 font-medium">
+                Deadline
+              </label>
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
-                className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
 
-            <div className="flex flex-col gap-2 ">
-              <label className="text-gray-700 " htmlFor="category">
+            <div>
+              <label
+                className="block text-gray-700 font-medium"
+                htmlFor="category"
+              >
                 Category
               </label>
               <select
                 name="category"
                 id="category"
-                className="border p-2 rounded-md"
                 defaultValue={category}
+                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               >
                 <option value="Web Development">Web Development</option>
                 <option value="Graphics Design">Graphics Design</option>
                 <option value="Digital Marketing">Digital Marketing</option>
               </select>
             </div>
+
             <div>
-              <label className="text-gray-700 " htmlFor="min_price">
+              <label
+                className="block text-gray-700 font-medium"
+                htmlFor="min_price"
+              >
                 Minimum Price
               </label>
               <input
@@ -127,12 +144,16 @@ const UpdateJob = () => {
                 name="min_price"
                 type="number"
                 defaultValue={min_price}
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
+                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
               />
             </div>
 
             <div>
-              <label className="text-gray-700 " htmlFor="max_price">
+              <label
+                className="block text-gray-700 font-medium"
+                htmlFor="max_price"
+              >
                 Maximum Price
               </label>
               <input
@@ -140,25 +161,35 @@ const UpdateJob = () => {
                 name="max_price"
                 type="number"
                 defaultValue={max_price}
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
+                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                required
               />
             </div>
           </div>
-          <div className="flex flex-col gap-2 mt-4">
-            <label className="text-gray-700 " htmlFor="description">
+
+          <div>
+            <label
+              className="block text-gray-700 font-medium"
+              htmlFor="description"
+            >
               Description
             </label>
             <textarea
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               name="description"
               id="description"
-              cols="30"
+              rows="5"
               defaultValue={description}
+              className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
             ></textarea>
           </div>
-          <div className="flex justify-end mt-6">
-            <button className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transhtmlForm bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600">
-              Save
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+            >
+              Save Changes
             </button>
           </div>
         </form>
