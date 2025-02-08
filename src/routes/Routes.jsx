@@ -8,6 +8,9 @@ import JobDetails from "../pages/JobDetails";
 import AddJob from "../pages/AddJob";
 import MyPostedJobs from "../pages/MyPostedJobs";
 import UpdateJob from "../pages/UpdateJob";
+import PrivateRoute from "./PrivateRoute";
+import MyBids from "../pages/MyBids";
+import BidRequests from "../pages/BidRequests";
 
 const router = createBrowserRouter([
   {
@@ -20,28 +23,54 @@ const router = createBrowserRouter([
         element: <Home></Home>,
       },
       {
+        path: "/job/:id",
+        element: (
+          <PrivateRoute>
+            <JobDetails></JobDetails>
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`${import.meta.env.VITE_API_URL}/job/${params.id}`),
+      },
+      {
+        path: "/add-job",
+        element: (
+          <PrivateRoute>
+            <AddJob></AddJob>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/my-posted-jobs",
+        element: (
+          <PrivateRoute>
+            <MyPostedJobs></MyPostedJobs>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/update/:id",
+        element: (
+          <PrivateRoute>
+            <UpdateJob></UpdateJob>
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(`${import.meta.env.VITE_API_URL}/job/${params.id}`),
+      },
+      {
+       path:"/my-bids",
+       element:<MyBids></MyBids>
+      },
+      {
+        path:"/bid-requests",
+        element:<BidRequests></BidRequests>
+      },
+      {
         path: "/login",
         element: <Login></Login>,
       },
-      {
-        path:'/job/:id',
-        element:<JobDetails></JobDetails>,
-        loader:({params})=> fetch(`${import.meta.env.VITE_API_URL}/job/${params.id}`)
-      },
-      {
-        path:"/add-job",
-        element:<AddJob></AddJob>
-      },
-      {
-        path:'/my-posted-jobs',
-        element:<MyPostedJobs></MyPostedJobs>
-      },
-      {
-        path:'/update/:id',
-        element:<UpdateJob></UpdateJob>,
-        loader:({params})=>fetch(`${import.meta.env.VITE_API_URL}/job/${params.id}`)
-      },
-      
+
       {
         path: "/registration",
         element: <Registration></Registration>,

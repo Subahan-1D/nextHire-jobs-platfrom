@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import registerimg from "../../assets/registration.jpg";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -6,9 +6,11 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 const Registration = () => {
+  const location = useLocation();
   const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate("");
+  const from = location.state || "/";
   const {
     register,
     handleSubmit,
@@ -24,7 +26,7 @@ const Registration = () => {
       await updateUserProfile(data.name, data.photo);
       console.log("Profile updated");
       toast.success("User Created Successfully!");
-      navigate("/");
+      navigate(from, { replace: true });
       reset();
     } catch (error) {
       console.error(error);
@@ -36,7 +38,7 @@ const Registration = () => {
     try {
       await signInWithGoogle();
       toast.success("SignUp Successfully");
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       console.log(err);
       toast.error(err?.message);
