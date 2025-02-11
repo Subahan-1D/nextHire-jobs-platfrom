@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const JobDetails = () => {
+  const navigate = useNavigate()
   const [startDate, setStartDate] = useState(new Date());
   const job = useLoaderData();
   const { user } = useAuth();
@@ -52,6 +53,7 @@ const JobDetails = () => {
       );
       console.log(data);
       toast.success("Bid placed successfully!");
+      navigate('/my-bids')
     } catch (err) {
       console.log(err);
       toast.error("Failed to place bid.");

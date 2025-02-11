@@ -1,16 +1,22 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import registerimg from "../../assets/registration.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
 const Registration = () => {
   const location = useLocation();
-  const { createUser, signInWithGoogle, updateUserProfile } = useAuth();
+  const { createUser, signInWithGoogle, updateUserProfile, user, loading } =
+    useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate("");
   const from = location.state || "/";
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [navigate, user]);
   const {
     register,
     handleSubmit,
@@ -44,6 +50,7 @@ const Registration = () => {
       toast.error(err?.message);
     }
   };
+  if (user || loading) return;
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">

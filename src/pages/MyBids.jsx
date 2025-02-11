@@ -1,52 +1,137 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import useAuth from "../hooks/useAuth";
+
 const MyBids = () => {
-    return (
-      <section className="container mx-auto px-4 pt-12">
-        <div className="flex items-center gap-3 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800">My Bids</h2>
-          <span className="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
-            05 Bids
-          </span>
-        </div>
-  
-        <div className="overflow-x-auto shadow-lg rounded-2xl">
-          <table className="min-w-full bg-white divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {['Title', 'Deadline', 'Price', 'Category', 'Status', 'Actions'].map((header) => (
-                  <th
-                    key={header}
-                    scope="col"
-                    className="px-4 py-3 text-sm font-medium text-left text-gray-500"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              <tr>
-                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">Build Dynamic Website</td>
-                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">10/04/2024</td>
-                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">$200</td>
-                <td className="px-4 py-4 whitespace-nowrap">
-                  <span className="px-3 py-1 text-xs text-blue-500 bg-blue-100 rounded-full">Web Development</span>
+  const [bids, setBids] = useState([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchBidData();
+    }
+  }, [user]);
+
+  const fetchBidData = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/my-bids/${user?.email}`
+      );
+      setBids(data);
+    } catch (error) {
+      console.error("Error fetching bids:", error);
+    }
+  };
+
+  // bid status funtion
+  const handleStatus = async (id) => {
+    const { data } = await axios.patch(
+      `${import.meta.env.VITE_API_URL}/bid/${id}`,
+      { status: "Complete" }
+    );
+    console.log(data);
+    fetchBidData();
+  };
+
+  return (
+    <section className="container mx-auto px-4 py-12">
+      <div className="flex items-center gap-3 mb-6">
+        <h2 className="text-2xl font-semibold text-gray-800">My Bids</h2>
+        <span className="px-3 py-1 text-sm text-blue-600 bg-blue-100 rounded-full">
+          {bids.length} {bids.length === 1 ? "Bid" : "Bids"}
+        </span>
+      </div>
+
+      <div className="overflow-x-auto shadow-md rounded-lg">
+        <table className="min-w-full bg-white divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              {[
+                "Title",
+                "Deadline",
+                "Price",
+                "Category",
+                "Status",
+                "Actions",
+              ].map((header) => (
+                <th
+                  key={header}
+                  className="px-4 py-3 text-sm font-medium text-left text-gray-600"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {bids.map((bid) => (
+              <tr key={bid._id} className="hover:bg-gray-50">
+                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                  {bid.job_title}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                  {new Date(bid.deadline).toLocaleDateString()}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-700 whitespace-nowrap">
+                  ${bid.price}
                 </td>
                 <td className="px-4 py-4 text-sm whitespace-nowrap">
-                  <span className="inline-flex items-center px-3 py-1 text-yellow-600 bg-yellow-100 rounded-full">
-                    <span className="w-2 h-2 mr-2 bg-yellow-600 rounded-full"></span>
-                    Pending
+                  <span
+                    className={`px-3 py-1 text-xs rounded-full ${
+                      bid.category === "Web Development"
+                        ? "text-blue-500 bg-blue-100"
+                        : bid.category === "Graphics Design"
+                        ? "text-emerald-500 bg-emerald-100"
+                        : bid.category === "Digital Marketing"
+                        ? "text-pink-500 bg-pink-100"
+                        : "text-gray-500 bg-gray-100"
+                    }`}
+                  >
+                    {bid.category}
                   </span>
                 </td>
-                <td className="px-4 py-4 text-sm whitespace-nowrap">
+                <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                  <div
+                    className={`inline-flex items-center px-3 py-1 rounded-full gap-2 ${
+                      bid.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-600"
+                        : bid.status === "In Progress"
+                        ? "bg-blue-100 text-blue-600"
+                        : bid.status === "Complete"
+                        ? "bg-emerald-100 text-emerald-600"
+                        : bid.status === "Rejected"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        bid.status === "Pending"
+                          ? "bg-yellow-600"
+                          : bid.status === "In Progress"
+                          ? "bg-blue-600"
+                          : bid.status === "Complete"
+                          ? "bg-emerald-600"
+                          : bid.status === "Rejected"
+                          ? "bg-red-600"
+                          : "bg-gray-600"
+                      }`}
+                    />
+                    {bid.status}
+                  </div>
+                </td>
+                <td className="px-4 py-4 text-sm text-center whitespace-nowrap">
                   <button
+                    disabled={bid.status !== "In Progress"}
+                    onClick={() => handleStatus(bid._id)}
                     title="Mark Complete"
-                    className="text-gray-500 transition hover:text-red-500 focus:outline-none"
+                    className="text-gray-500 hover:text-emerald-500 focus:outline-none disabled:text-gray-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
-                      strokeWidth={1.5}
+                      strokeWidth="1.5"
                       stroke="currentColor"
                       className="w-5 h-5"
                     >
@@ -59,11 +144,12 @@ const MyBids = () => {
                   </button>
                 </td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    );
-  };
-  
-  export default MyBids;
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+export default MyBids;
