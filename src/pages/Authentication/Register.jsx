@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
+import axios from "axios";
 const Registration = () => {
   const location = useLocation();
   const { createUser, signInWithGoogle, updateUserProfile, user, loading } =
@@ -25,10 +26,8 @@ const Registration = () => {
   } = useForm();
   const onSubmit = async (data) => {
     try {
-      console.log(data);
       const result = await createUser(data.email, data.password);
       console.log(result.user);
-
       await updateUserProfile(data.name, data.photo);
       console.log("Profile updated");
       toast.success("User Created Successfully!");
@@ -42,7 +41,15 @@ const Registration = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        {
+          email: result?.user?.email,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
       toast.success("SignUp Successfully");
       navigate(from, { replace: true });
     } catch (err) {

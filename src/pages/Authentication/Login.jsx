@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
 import toast from "react-hot-toast";
+import axios from "axios";
 const Login = () => {
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,15 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        {
+          email: result?.user?.email,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
       navigate(from, { replace: true });
     } catch (error) {
       console.log(error.message);
@@ -34,6 +43,14 @@ const Login = () => {
     try {
       const result = await signIn(email, password);
       console.log(result);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        {
+          email: result?.user?.email,
+        },
+        { withCredentials: true }
+      );
+      console.log(data);
       toast.success("Login Successfully");
       navigate(form, { replace: true });
     } catch (err) {
@@ -41,7 +58,7 @@ const Login = () => {
       toast.error(err?.message);
     }
   };
-  if (user || loading) return ;
+  if (user || loading) return;
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">

@@ -1,12 +1,14 @@
-import axios from "axios";
+
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const MyPostedJobs = () => {
   const [postedJobs, setPostedJobs] = useState([]);
+  const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
 
   useEffect(() => {
@@ -14,17 +16,13 @@ const MyPostedJobs = () => {
   }, [user]);
 
   const postedData = async () => {
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/jobs/${user?.email}`
-    );
+    const { data } = await axiosSecure(`/jobs/${user?.email}`);
     setPostedJobs(data);
   };
 
   const handleDelete = async (id) => {
     try {
-      const { data } = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/job/${id}`
-      );
+      const { data } = await axiosSecure.delete(`/job/${id}`);
       console.log(data);
       toast.success("Delete Successfully");
       postedData();
@@ -100,7 +98,10 @@ const MyPostedJobs = () => {
                   >
                     <Trash2 />
                   </button>
-                  <Link to={`/update/${p._id}`} className="text-yellow-500 hover:text-yellow-600 transition">
+                  <Link
+                    to={`/update/${p._id}`}
+                    className="text-yellow-500 hover:text-yellow-600 transition"
+                  >
                     <Pencil />
                   </Link>
                 </td>
