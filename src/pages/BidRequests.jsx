@@ -1,24 +1,38 @@
-import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import axios from "axios";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
 const BidRequests = () => {
-  const [bids, setBids] = useState([]);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
-  useEffect(() => {
-    if (user) {
-      fetchBidData();
-    }
-  }, [user]);
-
+  const {
+    data: bids = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryFn: () => fetchBidData(),
+    queryKey: ["bids"],
+  });
+  console.log(bids);
+  const { mutateAsync } = useMutation({
+    mutationFn: async ({ id, status }) => {
+      const { data } = await axiosSecure.patch(`/bid/${id}`, { status });
+      console.log(data);
+      return data
+    },
+    onSuccess: () => {
+      console.log("data save success");
+      toast.success("Updated Successful")
+      // refresh ui data
+      refetch();
+    },
+  });
   const fetchBidData = async () => {
     try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/bid-requests/${user?.email}`
-      );
-      console.log(data);
-      setBids(data);
+      const { data } = await axiosSecure.get(`/bid-requests/${user?.email}`);
+      return data;
     } catch (error) {
       console.error("Error fetching bids:", error);
     }
@@ -26,15 +40,11 @@ const BidRequests = () => {
 
   // bid status funtion
   const handleStatus = async (id, prevStatus, status) => {
-    if(prevStatus === status) return console.log('sorry')
-    console.log(id, prevStatus, status);
-    const { data } = await axios.patch(
-      `${import.meta.env.VITE_API_URL}/bid/${id}`,
-      { status }
-    );
-    console.log(data);
-    fetchBidData()
+    if (prevStatus === status) return console.log("sorry");
+    await mutateAsync({ id, status });
   };
+  if (isLoading)
+    return <span className="loading loading-dots loading-lg"></span>;
   return (
     <section className="container mx-auto p-4 sm:p-6 lg:p-8 pt-12">
       <div className="flex items-center gap-x-3 mb-6">
