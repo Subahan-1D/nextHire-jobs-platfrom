@@ -1,32 +1,32 @@
 import useAuth from "../hooks/useAuth";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
 
 const BidRequests = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-
+  const queryClient = useQueryClient();
   const {
     data: bids = [],
     isLoading,
-    refetch,
   } = useQuery({
     queryFn: () => fetchBidData(),
-    queryKey: ["bids"],
+    queryKey: ["bids", user?.email],
   });
   console.log(bids);
   const { mutateAsync } = useMutation({
     mutationFn: async ({ id, status }) => {
       const { data } = await axiosSecure.patch(`/bid/${id}`, { status });
       console.log(data);
-      return data
+      return data;
     },
     onSuccess: () => {
       console.log("data save success");
-      toast.success("Updated Successful")
+      toast.success("Updated Successful");
       // refresh ui data
-      refetch();
+      // refetch();
+      queryClient.invalidateQueries({ queryKey: ["bids"] });
     },
   });
   const fetchBidData = async () => {

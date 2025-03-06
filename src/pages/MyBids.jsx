@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+
 import useAuth from "../hooks/useAuth";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const MyBids = () => {
   const [bids, setBids] = useState([]);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
     if (user) {
@@ -14,9 +16,7 @@ const MyBids = () => {
 
   const fetchBidData = async () => {
     try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/my-bids/${user?.email}`
-      );
+      const { data } = await axiosSecure.get(`/my-bids/${user?.email}`);
       setBids(data);
     } catch (error) {
       console.error("Error fetching bids:", error);
@@ -25,10 +25,9 @@ const MyBids = () => {
 
   // bid status funtion
   const handleStatus = async (id) => {
-    const { data } = await axios.patch(
-      `${import.meta.env.VITE_API_URL}/bid/${id}`,
-      { status: "Complete" }
-    );
+    const { data } = await axiosSecure.patch(`/bid/${id}`, {
+      status: "Complete",
+    });
     console.log(data);
     fetchBidData();
   };

@@ -3,11 +3,12 @@ import useAuth from "../hooks/useAuth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const JobDetails = () => {
-  const navigate = useNavigate()
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
   const [startDate, setStartDate] = useState(new Date());
   const job = useLoaderData();
   const { user } = useAuth();
@@ -47,16 +48,14 @@ const JobDetails = () => {
     };
 
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/bid`,
-        bidData
-      );
+      const { data } = await axiosSecure.post(`/bid`, bidData);
       console.log(data);
       toast.success("Bid placed successfully!");
-      navigate('/my-bids')
+      navigate("/my-bids");
     } catch (err) {
       console.log(err);
-      toast.error("Failed to place bid.");
+      toast.error("Already applied this job");
+      e.target.reset();
     }
   };
 

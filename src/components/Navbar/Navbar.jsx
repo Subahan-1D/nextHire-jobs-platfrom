@@ -47,6 +47,16 @@ const Navbar = () => {
               Home
             </NavLink>
           </li>
+          <li>
+            <NavLink
+              to="/jobs"
+              className={({ isActive }) =>
+                isActive ? "text-blue-500 font-semibold" : "hover:text-blue-400"
+              }
+            >
+              All Jobs
+            </NavLink>
+          </li>
 
           {user && (
             <>
