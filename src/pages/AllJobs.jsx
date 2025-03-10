@@ -3,16 +3,42 @@ import { useEffect, useState } from "react";
 import JobCard from "../components/Tab/JobCard";
 
 const AllJobs = () => {
+  const [itemPerPage, setItemPerPage] = useState(4);
+  const [count, setCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [jobs, setJobs] = useState([]);
   useEffect(() => {
     const getData = async () => {
-      const { data } = await axios(`${import.meta.env.VITE_API_URL}/jobs`);
+      const { data } = await axios.get(
+        `${
+          import.meta.env.VITE_API_URL
+        }/all-jobs?page=${currentPage}&size=${itemPerPage}`
+      );
       setJobs(data);
     };
     getData();
+  }, [currentPage, itemPerPage]);
+
+  useEffect(() => {
+    const getCount = async () => {
+      const { data } = await axios(
+        `${import.meta.env.VITE_API_URL}/jobs-count`
+      );
+      setCount(data.count);
+    };
+    getCount();
   }, []);
-  console.log(jobs);
-  const pages = [1, 2, 3, 4, 5];
+  const numberOfPages = Math.ceil(count / itemPerPage);
+  const pages = [...Array(numberOfPages).keys()].map((element) => element + 1);
+  console.log("Count:", count);
+  console.log("Item Per Page:", itemPerPage);
+
+  // handle pagination button
+
+  const handlePaginationButton = (value) => {
+    console.log(value);
+    setCurrentPage(value);
+  };
   return (
     <div className="container px-6 py-10 mx-auto min-h-[calc(100vh-306px)] flex flex-col justify-between">
       <div>
@@ -92,11 +118,17 @@ const AllJobs = () => {
         {pages.map((btnNum) => (
           <button
             key={btnNum}
-            className={`hidden px-4 py-2 mx-1 transition-colors duration-300 transform  rounded-md sm:inline hover:bg-blue-500  hover:text-white`}
+            onClick={() => handlePaginationButton(btnNum)}
+            className={`${
+              currentPage === btnNum
+                ? "bg-blue-500 text-white"
+                : ""
+            } px-4 py-2 mx-1 transition-colors duration-300 transform rounded-md sm:inline`}
           >
             {btnNum}
           </button>
         ))}
+
         {/* Next Button */}
         <button className="px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-gray-200 rounded-md hover:bg-blue-500 disabled:hover:bg-gray-200 disabled:hover:text-gray-500 hover:text-white disabled:cursor-not-allowed disabled:text-gray-500">
           <div className="flex items-center -mx-1">
