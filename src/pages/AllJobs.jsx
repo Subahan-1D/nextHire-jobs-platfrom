@@ -5,6 +5,7 @@ import JobCard from "../components/Tab/JobCard";
 const AllJobs = () => {
   const [itemPerPage, setItemPerPage] = useState(8);
   const [count, setCount] = useState(0);
+  const [sort, setSort] = useState("");
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [jobs, setJobs] = useState([]);
@@ -13,12 +14,12 @@ const AllJobs = () => {
       const { data } = await axios.get(
         `${
           import.meta.env.VITE_API_URL
-        }/all-jobs?page=${currentPage}&size=${itemPerPage}&filter=${filter}`
+        }/all-jobs?page=${currentPage}&size=${itemPerPage}&filter=${filter}&sort=${sort}`
       );
       setJobs(data);
     };
     getData();
-  }, [currentPage, itemPerPage, filter]);
+  }, [currentPage, itemPerPage, filter, sort]);
 
   useEffect(() => {
     const getCount = async () => {
@@ -39,6 +40,13 @@ const AllJobs = () => {
   const handlePaginationButton = (value) => {
     console.log(value);
     setCurrentPage(value);
+  };
+
+  // handle Reset Button
+  const handleReset = () => {
+    setFilter("");
+    setCount("");
+    setSort("");
   };
   return (
     <div className="container px-6 py-10 mx-auto min-h-[calc(100vh-306px)] flex flex-col justify-between">
@@ -79,8 +87,13 @@ const AllJobs = () => {
           </form>
           <div>
             <select
-              name="category"
-              id="category"
+              onChange={(e) => {
+                setSort(e.target.value);
+                setCurrentPage(1);
+              }}
+              value={sort}
+              name="sort"
+              id="sort"
               className="border p-4 rounded-md"
             >
               <option value="">Sort By Deadline</option>
@@ -88,7 +101,9 @@ const AllJobs = () => {
               <option value="asc">Ascending Order</option>
             </select>
           </div>
-          <button className="btn">Reset</button>
+          <button className="btn" onClick={handleReset}>
+            Reset
+          </button>
         </div>
         <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {jobs.map((job) => (
