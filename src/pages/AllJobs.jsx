@@ -23,12 +23,12 @@ const AllJobs = () => {
   useEffect(() => {
     const getCount = async () => {
       const { data } = await axios(
-        `${import.meta.env.VITE_API_URL}/jobs-count`
+        `${import.meta.env.VITE_API_URL}/jobs-count?filter=${filter}`
       );
       setCount(data.count);
     };
     getCount();
-  }, []);
+  }, [filter]);
   const numberOfPages = Math.ceil(count / itemPerPage);
   const pages = [...Array(numberOfPages).keys()].map((element) => element + 1);
   console.log("Count:", count);
@@ -46,7 +46,10 @@ const AllJobs = () => {
         <div className="flex flex-col md:flex-row justify-center items-center gap-5 ">
           <div>
             <select
-              onChange={(e) => setFilter(e.target.value)}
+              onChange={(e) => {
+                setFilter(e.target.value);
+                setCurrentPage(1);
+              }}
               name="category"
               id="category"
               value={filter}
