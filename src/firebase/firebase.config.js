@@ -5,12 +5,12 @@ import { initializeApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBFijbYF16Q8dG7gasXKQPbBk68V-QYr3Y",
-  authDomain: "nexthire-jobs-platfrom.firebaseapp.com",
-  projectId: "nexthire-jobs-platfrom",
-  storageBucket: "nexthire-jobs-platfrom.firebasestorage.app",
-  messagingSenderId: "542854917410",
-  appId: "1:542854917410:web:f34c112690b54ebc82c97b"
+  apiKey:import.meta.env.VITE_apiKey,
+  authDomain:import.meta.env.VITE_authDomain,
+  projectId:import.meta.env.VITE_projectId,
+  storageBucket:import.meta.env.VITE_storageBucket,
+  messagingSenderId:import.meta.env.VITE_messagingSenderId,
+  appId: import.meta.env.VITE_appId
 };
 
 // Initialize Firebase
